@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> friendFinder </title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <style>
+        .page-footer {
+            margin-top: 10px;
+        }
+        nav .brand-logo {
+            margin-left: 20px;
+        }
+        hr {
+            border-top: 1px solid #ee6e73;
+            margin-bottom: 30px;
+        }
+        img {
+            max-height: 300px;
+            max-width: 250px;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-wrapper">
+        <a href="#" class="brand-logo">friendFinder</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="/">home</a></li>
+            <li><a href="/survey">survey</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+<h2>Survey Questions</h2>
+    <hr>
+<form class="col s12" action="/survey" method="POST">
+    <div class="input-field col s6">
+        <i class="material-icons prefix">account_circle</i>
+        <input id="icon_prefix" type="text" class="validate responses">
+        <label for="icon_prefix">Name</label>
+    </div>
+    <div class="input-field col s6">
+        <i class="material-icons prefix">photo</i>
+        <input id="icon_pic" type="text" class="validate responses">
+        <label for="icon_pic">photo link</label>
+    </div>
+    <hr>
+    <div id="questions">
+
+    </div>
+    <button class="btn waves-effect waves-light" type="submit" name="action" id="submit">Submit
+        <i class="material-icons right">send</i>
+    </button>
+</form>
+    <div id="modal1" class="modal">
+        <div class="modal-content" id="bestmatch">
+            <h6>Your new best friend is:</h6>
+            <h4 id="matchName"></h4>
+            <img src="" id="matchPic">
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Awesome!</a>
+        </div>
+    </div>
+</div>
+<footer class="page-footer">
+    <div class="footer-copyright">
+        <div class="container">
+            © 2018 Copyright Text
+            <a class="grey-text text-lighten-4 right" href="/api/friends">API Friends List</a>
+        </div>
+    </div>
+
+</footer>
+
+<script type="text/javascript">
+
+    //render form questions
+    $(document).ready(function() {
+        $.get("/api/friends/questions", function (data) {
+            console.log(data);
+            data.forEach(function (survey) {
+                console.log(survey);
+                var questionDiv = $('<div class="input-field col s12">');
+                var questionTitle = $('<h5>');
+                var selection = $('<select id='+survey.id+'>\n' +
+                    '    <option value="" disabled selected>How do you feel?</option>\n' +
+                    '    <option value= 1>1 (Strongly Disagree)</option>\n' +
+                    '    <option value= 2>2</option>\n' +
+                    '    <option value= 3>3</option>\n' +
+                    '    <option value= 4>4</option>\n' +
+                    '    <option value= 5>5 (Strongly Agree)</option>\n' +
+                    '    </select>');
+                questionTitle.text(survey.question);
+                questionDiv.append(questionTitle);
+                questionDiv.append(selection);
+                $('#questions').append(questionDiv);
+                $('select').material_select();
+            });
+        });
+    });
+
+    //submit form
+    $('#submit').on('click', function (event) {
+        event.preventDefault();
+        function allResponses() {
+            var hasResponse  = true;
+            $('.responses').each(function () {
+                if($(this).val() === '') {
+                    hasResponse = false;
+                }
+            });
+            $('select').each(function () {
+                if($(this).val() === '') {
+                    hasResponse = false;
+                }
+            });
+            return hasResponse;
+        }
+        if(allResponses()) {
+            var userResponse = {
+                name: $('#icon_prefix').val(),
+                photo: $('#icon_pic').val(),
+                scores: [
+                    parseInt($('#q1').val()),
+                    parseInt($('#q2').val()),
+                    parseInt($('#q3').val()),
+                    parseInt($('#q4').val()),
+                    parseInt($('#q5').val()),
+                    parseInt($('#q6').val()),
+                    parseInt($('#q7').val()),
+                    parseInt($('#q8').val()),
+                    parseInt($('#q9').val()),
+                    parseInt($('#q10').val())
+                ]
+            };
+            console.log(userResponse);
+            $.post('/api/friends', userResponse, function (data) {
+                $('#matchName').text(data.name);
+                $('#matchPic').attr('src', data.pic);
+                $('#modal1').modal('open');
+            });
+        } else {
+            alert("Have you really filled everything out?");
+        }
+    });
+    $(document).ready(function(){
+        // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
+        $('.modal').modal();
+    });
+</script>
+
+
+</body>

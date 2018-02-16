@@ -1,0 +1,26 @@
+{
+  "name": "friendfinder",
+  "version": "1.0.0",
+  "description": "class project ",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joshlsqd/friendFinder.git"
+  },
+  "author": "Joshua Cook",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joshlsqd/friendFinder/issues"
+  },
+  "homepage": "https://github.com/joshlsqd/friendFinder#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "handlebars": "^4.0.11",
+    "path": "^0.12.7"
+  }
+}
